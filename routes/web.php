@@ -16,10 +16,10 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 
 Route::get('/', 'HomeController@index')->name('home');
+Route::post('/guardarRespuestas', 'HomeController@guardarRespuestas')->name('guardarRespuestas');
 
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['auth']], function () {
 
-    Route::resource('/modulos', 'ModuloController', ['only' => ['index', 'create', 'show', 'edit', 'store', 'update', 'destroy']]);
 
     /*RUTAS DEL MENU*/
     Route::get('menu', 'MenuController@index')->name('menu');
