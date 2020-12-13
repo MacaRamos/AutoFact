@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Models\Admin\Rol;
+use App\Models\Fundo;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -16,7 +18,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'username'
     ];
 
     /**
@@ -36,4 +38,38 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+
+    public function roles()
+    {
+        return $this->belongsToMany(Rol::class, 'usuarios_rol', 'usuario_id', 'rol_id');
+    }
+
+    public function authorizeRoles($roles)
+    {
+        abort_unless($this->hasAnyRole($roles), 401);
+        return true;
+    }
+    public function hasAnyRole($roles)
+    {
+        if (is_array($roles)) {
+            foreach ($roles as $rol) {
+                if ($this->hasRole($rol)) {
+                    return true;
+                }
+            }
+        } else {
+            if ($this->hasRole($roles)) {
+                return true; 
+            }   
+        }
+        return false;
+    }
+    public function hasRole($rol)
+    {
+        if ($this->roles()->where('nombre', $rol)->first()) {
+            return true;
+        }
+        return false;
+    }
 }
